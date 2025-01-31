@@ -1,46 +1,56 @@
 package org.example.crudlibros;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
-import java.time.LocalDate;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.Date;
 
 @Entity
 @Table(name = "usuario")
 public class Usuario {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
-    private Integer id;
+    @Column(name = "id")
+    private Long id;
 
     @Column(name = "dni", nullable = false, length = 15)
+    @NotBlank(message = "El DNI no puede estar en blanco")
+    @Pattern(regexp = "^[0-9]{8}[A-Za-z]{1}$", message = "El DNI debe tener un formato válido (8 dígitos seguidos de una letra)")
     private String dni;
 
     @Column(name = "nombre", nullable = false, length = 100)
+    @NotBlank(message = "El nombre no puede estar en blanco")
+    @Pattern(regexp = "^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\\s]+$", message = "El nombre solo puede contener caracteres alfanuméricos y espacios")
+    @Size(max = 100, message = "El nombre no puede exceder los 100 caracteres")
     private String nombre;
 
     @Column(name = "email", nullable = false, length = 100)
+    @NotBlank(message = "El email no puede estar en blanco")
+    @Pattern(regexp = "^[A-Za-z0-9._-]+@gmail.com$", message = "El email debe tener un formato válido y debe ser de Gmail (ejemplo: usuario@gmail.com)")
+
     private String email;
 
-    @Column(name = "password", nullable = false)
+    @Column(name = "password", nullable = false, length = 255)
+    @NotBlank(message = "La contraseña no puede estar en blanco")
+    @Pattern(regexp = "^[a-zA-Z0-9]{4,12}$", message = "La contraseña debe ser alfanumérica y tener entre 4 y 12 caracteres")
     private String password;
 
-    @Lob
     @Column(name = "tipo", nullable = false)
+    @NotBlank(message = "El tipo de usuario no puede estar en blanco")
+    @Pattern(regexp = "^(normal|administrador)$", message = "El tipo debe ser 'normal' o 'administrador'")
     private String tipo;
 
-    @Column(name = "penalizacionHasta")
-    private LocalDate penalizacionHasta;
+    @Column(name = "penalizacionhasta")
+    private Date penalizacionhasta;
 
-    @OneToMany(mappedBy = "usuario")
-    private Set<Prestamo> prestamos = new LinkedHashSet<>();
-
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -84,20 +94,11 @@ public class Usuario {
         this.tipo = tipo;
     }
 
-    public LocalDate getPenalizacionHasta() {
-        return penalizacionHasta;
+    public Date getPenalizacionhasta() {
+        return penalizacionhasta;
     }
 
-    public void setPenalizacionHasta(LocalDate penalizacionHasta) {
-        this.penalizacionHasta = penalizacionHasta;
+    public void setPenalizacionhasta(Date penalizacionhasta) {
+        this.penalizacionhasta = penalizacionhasta;
     }
-
-    public Set<Prestamo> getPrestamos() {
-        return prestamos;
-    }
-
-    public void setPrestamos(Set<Prestamo> prestamos) {
-        this.prestamos = prestamos;
-    }
-
 }

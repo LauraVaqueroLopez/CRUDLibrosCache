@@ -12,6 +12,7 @@ import java.util.Set;
 @Entity
 @Table(name = "ejemplar")
 public class Ejemplar {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -31,6 +32,7 @@ public class Ejemplar {
     @OneToMany(mappedBy = "ejemplar")
     @JsonIgnore
     private Set<Prestamo> prestamos = new LinkedHashSet<>();
+
 
     public Integer getId() {
         return id;
