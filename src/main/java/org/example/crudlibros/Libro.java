@@ -3,6 +3,7 @@ package org.example.crudlibros;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -13,15 +14,19 @@ public class Libro {
     @Id
     @Column(name = "isbn", nullable = false, length = 20)
     @NotBlank(message = "El ISBN no puede estar en blanco")
-    @Pattern(regexp = "[a-z]{4}[0-9]{4}", message = "El ISBN debe contener entre 8 dígitos")
+    @Pattern(regexp = "[A-Z]{4}[0-9]{4}", message = "El ISBN debe tener un formato válido")
     private String isbn;
 
     @Column(name = "titulo", nullable = false, length = 200)
     @NotBlank(message = "El título no puede estar en blanco")
+    @Pattern(regexp = "^[a-zA-Z0-9\s]+$", message = "El título solo puede contener caracteres alfanuméricos")
+    @Size(max = 200, message = "El título no puede exceder los 200 caracteres")
     private String titulo;
 
     @Column(name = "autor", nullable = false, length = 100)
     @NotBlank(message = "El autor no puede estar en blanco")
+    @Pattern(regexp = "^[a-zA-Z0-9\s]+$", message = "El autor solo puede contener caracteres alfanuméricos")
+    @Size(max = 100, message = "El autor no puede exceder los 100 caracteres")
     private String autor;
 
     @OneToMany(mappedBy = "isbn")

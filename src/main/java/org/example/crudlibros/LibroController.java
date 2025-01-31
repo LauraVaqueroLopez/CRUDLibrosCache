@@ -5,10 +5,12 @@ import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/libros")
@@ -41,15 +43,47 @@ public class LibroController {
  }
 
     @PostMapping
-    public ResponseEntity<Libro> crear(@Valid @RequestBody Libro libro) {
+    public ResponseEntity<?> crear(@Valid @RequestBody Libro libro, BindingResult result) {
+        if (result.hasErrors()) {
+            // Obtener los errores de validación y devolverlos en una respuesta
+            List<String> errorMessages = result.getAllErrors()
+                    .stream()
+                    .map(error -> {
+                        if (error instanceof FieldError) {
+                            FieldError fieldError = (FieldError) error;
+                            return fieldError.getField() + ": " + fieldError.getDefaultMessage();
+                        }
+                        return error.getDefaultMessage();
+                    })
+                    .collect(Collectors.toList());
+
+            return ResponseEntity.badRequest().body(errorMessages);
+        }
         return ResponseEntity.ok(libroService.guardar(libro));
     }
 
     @PutMapping("/{isbn}")
-    public ResponseEntity<Libro> actualizar(@PathVariable String isbn, @Valid @RequestBody Libro libro) {
+    public ResponseEntity<?> actualizar(@PathVariable String isbn, @Valid @RequestBody Libro libro, BindingResult result) {
         if (!libroService.obtenerPorId(isbn).isPresent()) {
             return ResponseEntity.notFound().build();
         }
+
+        if (result.hasErrors()) {
+            // Obtener los errores de validación y devolverlos en una respuesta
+            List<String> errorMessages = result.getAllErrors()
+                    .stream()
+                    .map(error -> {
+                        if (error instanceof FieldError) {
+                            FieldError fieldError = (FieldError) error;
+                            return fieldError.getField() + ": " + fieldError.getDefaultMessage();
+                        }
+                        return error.getDefaultMessage();
+                    })
+                    .collect(Collectors.toList());
+
+            return ResponseEntity.badRequest().body(errorMessages);
+        }
+
         libro.setIsbn(isbn);
         return ResponseEntity.ok(libroService.guardar(libro));
     }
