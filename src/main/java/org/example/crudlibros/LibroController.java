@@ -1,5 +1,6 @@
 package org.example.crudlibros;
 
+import jakarta.validation.Valid;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
@@ -40,12 +41,12 @@ public class LibroController {
  }
 
     @PostMapping
-    public ResponseEntity<Libro> crear(@RequestBody Libro libro) {
+    public ResponseEntity<Libro> crear(@Valid @RequestBody Libro libro) {
         return ResponseEntity.ok(libroService.guardar(libro));
     }
 
     @PutMapping("/{isbn}")
-    public ResponseEntity<Libro> actualizar(@PathVariable String isbn, @RequestBody Libro libro) {
+    public ResponseEntity<Libro> actualizar(@PathVariable String isbn, @Valid @RequestBody Libro libro) {
         if (!libroService.obtenerPorId(isbn).isPresent()) {
             return ResponseEntity.notFound().build();
         }
