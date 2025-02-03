@@ -1,5 +1,7 @@
-package org.example.crudlibros;
+package org.example.crudlibros.Servicios;
 
+import org.example.crudlibros.Modelo.Usuario;
+import org.example.crudlibros.Repositorios.UsuarioRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,22 +16,18 @@ public class UsuarioService {
         this.usuarioRepository = usuarioRepository;
     }
 
-    // Obtener todos los usuarios
     public List<Usuario> obtenerTodos() {
         return usuarioRepository.findAll();
     }
 
-    // Obtener un usuario por su ID
     public Optional<Usuario> obtenerPorId(Long id) {
         return usuarioRepository.findById(id);
     }
 
-    // Guardar un usuario (crear o actualizar)
     public Usuario guardar(Usuario usuario) {
         return usuarioRepository.save(usuario);
     }
 
-    // Eliminar un usuario por su ID
     public void eliminar(Long id) {
         usuarioRepository.deleteById(id);
     }

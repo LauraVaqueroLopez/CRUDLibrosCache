@@ -1,5 +1,8 @@
-package org.example.crudlibros;
+package org.example.crudlibros.Servicios;
 
+import org.example.crudlibros.Modelo.Ejemplar;
+import org.example.crudlibros.Repositorios.EjemplarRepository;
+import org.example.crudlibros.Repositorios.LibroRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -7,10 +10,12 @@ import java.util.Optional;
 
 @Service
 public class EjemplarService {
+    private final LibroRepository libroRepository;
 
     private final EjemplarRepository ejemplarRepository;
 
-    public EjemplarService(EjemplarRepository ejemplarRepository) {
+    public EjemplarService(LibroRepository libroRepository, EjemplarRepository ejemplarRepository) {
+        this.libroRepository = libroRepository;
         this.ejemplarRepository = ejemplarRepository;
     }
 

@@ -1,41 +1,52 @@
-package org.example.crudlibros;
+package org.example.crudlibros.Controlador;
 
 import jakarta.validation.Valid;
+import org.example.crudlibros.Modelo.Libro;
+import org.example.crudlibros.Servicios.LibroService;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/usuarios")
-public class UsuarioController {
+@RequestMapping("/libros")
+@CacheConfig(cacheNames = {"libros"})
+public class LibroController {
 
-    private final UsuarioService usuarioService;
+    private final LibroService libroService;
 
-    public UsuarioController(UsuarioService usuarioService) {
-        this.usuarioService = usuarioService;
+    public LibroController(LibroService libroService) {
+        this.libroService = libroService;
     }
 
     @GetMapping
-    public List<Usuario> listar() {
-        return usuarioService.obtenerTodos();
+    public List<Libro> listar() {
+        return libroService.obtenerTodos();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Usuario> obtener(@PathVariable Long id) {
+    @GetMapping("/{isbn}")
+    @Cacheable
+    public ResponseEntity<Libro> obtener(@PathVariable String isbn) {
 
-        Optional<Usuario> usuario = usuarioService.obtenerPorId(id);
-        return usuario.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
-    }
+        try {
+            Thread.sleep(3000);
+            Optional<Libro> libro = libroService.obtenerPorId(isbn);
+            return libro.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+ }
 
     @PostMapping
-    public ResponseEntity<?> crear(@Valid @RequestBody Usuario usuario, BindingResult result) {
+    public ResponseEntity<?> crear(@Valid @RequestBody Libro libro, BindingResult result) {
         if (result.hasErrors()) {
-            // Obtener los errores de validación y devolverlos en una respuesta
             List<String> errorMessages = result.getAllErrors()
                     .stream()
                     .map(error -> {
@@ -49,17 +60,16 @@ public class UsuarioController {
 
             return ResponseEntity.badRequest().body(errorMessages);
         }
-        return ResponseEntity.ok(usuarioService.guardar(usuario));
+        return ResponseEntity.ok(libroService.guardar(libro));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<?> actualizar(@PathVariable Long id, @Valid @RequestBody Usuario usuario, BindingResult result) {
-        if (!usuarioService.obtenerPorId(id).isPresent()) {
+    @PutMapping("/{isbn}")
+    public ResponseEntity<?> actualizar(@PathVariable String isbn, @Valid @RequestBody Libro libro, BindingResult result) {
+        if (!libroService.obtenerPorId(isbn).isPresent()) {
             return ResponseEntity.notFound().build();
         }
 
         if (result.hasErrors()) {
-            // Obtener los errores de validación y devolverlos en una respuesta
             List<String> errorMessages = result.getAllErrors()
                     .stream()
                     .map(error -> {
@@ -74,16 +84,16 @@ public class UsuarioController {
             return ResponseEntity.badRequest().body(errorMessages);
         }
 
-        usuario.setId(id);
-        return ResponseEntity.ok(usuarioService.guardar(usuario));
+        libro.setIsbn(isbn);
+        return ResponseEntity.ok(libroService.guardar(libro));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
-        if (!usuarioService.obtenerPorId(id).isPresent()) {
+    @DeleteMapping("/{isbn}")
+    public ResponseEntity<Void> eliminar(@PathVariable String isbn) {
+        if (!libroService.obtenerPorId(isbn).isPresent()) {
             return ResponseEntity.notFound().build();
         }
-        usuarioService.eliminar(id);
+        libroService.eliminar(isbn);
         return ResponseEntity.noContent().build();
     }
 }

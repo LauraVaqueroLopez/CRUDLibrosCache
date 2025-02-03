@@ -1,38 +1,41 @@
-package org.example.crudlibros;
+package org.example.crudlibros.Controlador;
 
 import jakarta.validation.Valid;
+import org.example.crudlibros.Modelo.Usuario;
+import org.example.crudlibros.Servicios.UsuarioService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/ejemplares")
-public class EjemplarController {
+@RequestMapping("/usuarios")
+public class UsuarioController {
 
-    private final EjemplarService ejemplarService;
+    private final UsuarioService usuarioService;
 
-    public EjemplarController(EjemplarService ejemplarService) {
-        this.ejemplarService = ejemplarService;
+    public UsuarioController(UsuarioService usuarioService) {
+        this.usuarioService = usuarioService;
     }
 
     @GetMapping
-    public List<Ejemplar> listar() {
-        return ejemplarService.obtenerTodos();
+    public List<Usuario> listar() {
+        return usuarioService.obtenerTodos();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Ejemplar> obtener(@PathVariable Integer id) {
-        Optional<Ejemplar> ejemplar = ejemplarService.obtenerPorId(id);
-        return ejemplar.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<Usuario> obtener(@PathVariable Long id) {
+
+        Optional<Usuario> usuario = usuarioService.obtenerPorId(id);
+        return usuario.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<?> crear(@Valid @RequestBody Ejemplar ejemplar, BindingResult result) {
+    public ResponseEntity<?> crear(@Valid @RequestBody Usuario usuario, BindingResult result) {
         if (result.hasErrors()) {
             List<String> errorMessages = result.getAllErrors()
                     .stream()
@@ -44,14 +47,15 @@ public class EjemplarController {
                         return error.getDefaultMessage();
                     })
                     .collect(Collectors.toList());
+
             return ResponseEntity.badRequest().body(errorMessages);
         }
-        return ResponseEntity.ok(ejemplarService.guardar(ejemplar));
+        return ResponseEntity.ok(usuarioService.guardar(usuario));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> actualizar(@PathVariable Integer id, @Valid @RequestBody Ejemplar ejemplar, BindingResult result) {
-        if (!ejemplarService.obtenerPorId(id).isPresent()) {
+    public ResponseEntity<?> actualizar(@PathVariable Long id, @Valid @RequestBody Usuario usuario, BindingResult result) {
+        if (!usuarioService.obtenerPorId(id).isPresent()) {
             return ResponseEntity.notFound().build();
         }
 
@@ -66,19 +70,20 @@ public class EjemplarController {
                         return error.getDefaultMessage();
                     })
                     .collect(Collectors.toList());
+
             return ResponseEntity.badRequest().body(errorMessages);
         }
 
-        ejemplar.setId(id);
-        return ResponseEntity.ok(ejemplarService.guardar(ejemplar));
+        usuario.setId(id);
+        return ResponseEntity.ok(usuarioService.guardar(usuario));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable Integer id) {
-        if (!ejemplarService.obtenerPorId(id).isPresent()) {
+    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+        if (!usuarioService.obtenerPorId(id).isPresent()) {
             return ResponseEntity.notFound().build();
         }
-        ejemplarService.eliminar(id);
+        usuarioService.eliminar(id);
         return ResponseEntity.noContent().build();
     }
 }

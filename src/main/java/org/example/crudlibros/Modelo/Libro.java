@@ -1,4 +1,4 @@
-package org.example.crudlibros;
+package org.example.crudlibros.Modelo;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;

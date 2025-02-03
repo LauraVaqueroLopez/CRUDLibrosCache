@@ -1,5 +1,7 @@
-package org.example.crudlibros;
+package org.example.crudlibros.Servicios;
 
+import org.example.crudlibros.Modelo.Libro;
+import org.example.crudlibros.Repositorios.LibroRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
