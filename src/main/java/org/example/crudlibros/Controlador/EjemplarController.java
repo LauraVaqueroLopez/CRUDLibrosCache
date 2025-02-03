@@ -4,6 +4,8 @@ import org.example.crudlibros.Modelo.Ejemplar;
 import org.example.crudlibros.Servicios.EjemplarService;
 import org.example.crudlibros.Modelo.Libro;
 import org.example.crudlibros.Servicios.LibroService;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,6 +14,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/ejemplares")
+@CacheConfig(cacheNames = {"ejemplarCache"})
 public class EjemplarController {
 
     private final EjemplarService ejemplarService;
@@ -27,6 +30,8 @@ public class EjemplarController {
         return ejemplarService.obtenerTodos();
     }
 
+
+    @Cacheable
     @GetMapping("/{id}")
     public ResponseEntity<Ejemplar> obtener(@PathVariable Integer id) {
 
@@ -36,44 +41,44 @@ public class EjemplarController {
 
     @PostMapping("/{isbn}/{estado}")
     public ResponseEntity<?> crear(@PathVariable String isbn, @PathVariable String estado) {
-        // Buscar el libro correspondiente al ISBN proporcionado
+
         Optional<Libro> libroOptional = libroService.obtenerPorId(isbn);
         if (libroOptional.isEmpty()) {
             return ResponseEntity.badRequest().body("El libro con el ISBN proporcionado no existe.");
         }
 
-        // Validar el estado proporcionado
+
         if (!estado.matches("^(disponible|prestado|dañado)$")) {
             return ResponseEntity.badRequest().body("El estado debe ser 'disponible', 'prestado' o 'dañado'.");
         }
 
-        // Crear el nuevo ejemplar con el libro asociado y el estado recibido
+
         Ejemplar ejemplar = new Ejemplar();
         ejemplar.setIsbn(libroOptional.get());
         ejemplar.setEstado(estado);
 
-        // Guardar el ejemplar
+
         return ResponseEntity.status(201).body(ejemplarService.guardar(ejemplar));
     }
 
     @PutMapping("/{id}/{estado}")
     public ResponseEntity<?> actualizar(@PathVariable Integer id, @PathVariable String estado) {
-        // Buscar el ejemplar por ID
+
         Optional<Ejemplar> ejemplarOptional = ejemplarService.obtenerPorId(id);
         if (ejemplarOptional.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
 
-        // Validar el estado proporcionado
+
         if (!estado.matches("^(disponible|prestado|dañado)$")) {
             return ResponseEntity.badRequest().body("El estado debe ser 'disponible', 'prestado' o 'dañado'.");
         }
 
-        // Actualizar el estado del ejemplar
+
         Ejemplar ejemplar = ejemplarOptional.get();
         ejemplar.setEstado(estado);
 
-        // Guardar el ejemplar actualizado
+
         return ResponseEntity.ok(ejemplarService.guardar(ejemplar));
     }
 

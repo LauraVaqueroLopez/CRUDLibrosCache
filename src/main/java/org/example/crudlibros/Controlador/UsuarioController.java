@@ -3,6 +3,8 @@ package org.example.crudlibros.Controlador;
 import jakarta.validation.Valid;
 import org.example.crudlibros.Modelo.Usuario;
 import org.example.crudlibros.Servicios.UsuarioService;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -14,6 +16,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/usuarios")
+@CacheConfig(cacheNames = {"usuarioCache"})
 public class UsuarioController {
 
     private final UsuarioService usuarioService;
@@ -27,6 +30,7 @@ public class UsuarioController {
         return usuarioService.obtenerTodos();
     }
 
+    @Cacheable
     @GetMapping("/{id}")
     public ResponseEntity<Usuario> obtener(@PathVariable Long id) {
 

@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/libros")
-@CacheConfig(cacheNames = {"libros"})
+@CacheConfig(cacheNames = {"librosCache"})
 public class LibroController {
 
     private final LibroService libroService;
